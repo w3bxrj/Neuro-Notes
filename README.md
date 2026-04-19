@@ -120,7 +120,7 @@ NeuroNote solves this by:
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-link>
+git clone https://github.com/w3bxrj/Neuro-Notes
 cd neuronote
 ```
 
@@ -160,15 +160,9 @@ npm run dev
 
 ---
 
-## 🎥 Demo
-
-> (Add your demo video link here)
-
----
-
 ## 🌐 Live Demo
 
-> (Add your deployed link here – Vercel/Netlify)
+> 
 
 ---
 
@@ -183,7 +177,7 @@ npm run dev
 
 ## 🧑‍💻 Author
 
-* Your Name
+* w3bxrj
 
 ---
 
