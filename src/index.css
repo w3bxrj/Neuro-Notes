@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-color: #f8fafc;
+    --surface-color: rgba(0, 0, 0, 0.03);
+    --surface-border: rgba(0, 0, 0, 0.08);
+    --primary-color: #3b82f6;
+    --secondary-color: #8b5cf6;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+  }
+  .dark {
+    --bg-color: #0B0F19;
+    --surface-color: rgba(255, 255, 255, 0.05);
+    --surface-border: rgba(255, 255, 255, 0.1);
+    --primary-color: #60A5FA;
+    --secondary-color: #A78BFA;
+    --text-primary: #F3F4F6;
+    --text-secondary: #9CA3AF;
+  }
+
+  body {
+    @apply bg-background text-textPrimary antialiased transition-colors duration-300;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--primary-color) 30%, transparent);
+  }
+}
+
+.glass {
+  @apply bg-surface backdrop-blur-md border border-surfaceBorder rounded-xl shadow-lg;
+}
+
+/* Custom Scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent; 
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-border); 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary); 
+}
