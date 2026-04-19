@@ -162,7 +162,7 @@ npm run dev
 
 ## 🌐 Live Demo
 
-> 
+> https://neuro-notes-teal.vercel.app/
 
 ---
 
