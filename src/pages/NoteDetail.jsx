@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useNotes } from '../context/NotesContext';
-import { ArrowLeft, Link as LinkIcon, Network, X, Loader } from 'lucide-react';
+import { ArrowLeft, Link as LinkIcon, Network, X, Loader, Sparkles, Plus, Cpu, Compass } from 'lucide-react';
 import toast from 'react-hot-toast';
 import LinkModal from '../components/notes/LinkModal';
+import { useSettings } from '../context/SettingsContext';
+import { calculateSimilarity, generateSummary, extractRelatedTopics } from '../utils/similarity';
 
 export default function NoteDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { notes, links, addLink, deleteLink, loading } = useNotes();
+  const { notes, links, addLink, deleteLink, updateNote, loading } = useNotes();
+  const { aiEnabled } = useSettings();
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [summaryError, setSummaryError] = useState(null);
 
   if (loading) {
     return (
@@ -60,6 +65,37 @@ export default function NoteDetail() {
     }
   };
 
+  const handleGenerateSummary = async () => {
+    setIsGenerating(true);
+    setSummaryError(null);
+    try {
+      const extractedSummary = await generateSummary(note.content);
+      await updateNote(note.id, { 
+        summary: extractedSummary,
+        lastSummarizedContent: note.content
+      });
+      toast.success("AI Summary generated successfully!");
+    } catch (err) {
+      toast.error("Failed to generate summary.");
+      setSummaryError("Fallback: Could not connect to AI API. Details: " + err.message);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const availableNotes = getAvailableNotesForLink();
+
+  const suggestedConnections = availableNotes
+    .map(otherNote => ({
+      note: otherNote,
+      score: calculateSimilarity(note, otherNote)
+    }))
+    .filter(item => item.score > 0.05)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
+
+  const relatedTopics = extractRelatedTopics(note.content, note.tags);
+
   return (
     <div className="p-8 h-full flex flex-col relative max-w-4xl mx-auto w-full">
       <button 
@@ -81,10 +117,76 @@ export default function NoteDetail() {
             ))}
           </div>
         )}
+
+        {note.summary && aiEnabled && (
+          <div className="mb-8 p-4 bg-secondary/10 border-l-4 border-secondary rounded-r-xl">
+             <div className="text-xs font-bold text-secondary uppercase tracking-wider mb-2 flex items-center gap-1">
+               <Cpu className="w-3 h-3" /> AI Extracted Summary
+             </div>
+             <p className="text-sm text-textPrimary font-medium italic leading-relaxed">{note.summary}</p>
+          </div>
+        )}
+
+        {aiEnabled && (!note.summary || note.content !== note.lastSummarizedContent) && (
+          <div className="mb-8">
+            <button 
+              onClick={handleGenerateSummary}
+              disabled={isGenerating}
+              className="px-4 py-2 rounded-xl text-sm font-semibold bg-surface border border-surfaceBorder hover:bg-secondary/10 hover:text-secondary hover:border-secondary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-textSecondary flex items-center gap-2"
+            >
+              {isGenerating ? <Loader className="w-4 h-4 animate-spin" /> : <Cpu className="w-4 h-4" />}
+              {isGenerating 
+                ? 'Generating AI Summary...' 
+                : note.summary ? 'Regenerate AI Summary' : 'Generate AI Summary'}
+            </button>
+            {summaryError && (
+              <p className="text-red-400 text-sm mt-3 px-2 flex items-center gap-2">
+                <X className="w-4 h-4" /> {summaryError}
+              </p>
+            )}
+          </div>
+        )}
+
         <div className="text-textSecondary whitespace-pre-wrap leading-relaxed text-lg flex-1">
           {note.content}
         </div>
       </div>
+
+      {suggestedConnections.length > 0 && (
+        <div className="glass p-6 rounded-3xl mb-8 border border-blue-500/20 bg-blue-500/5">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="w-5 h-5 text-blue-400" />
+            <h2 className="text-xl font-bold text-textPrimary">Suggested Connections</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            {suggestedConnections.map(({ note: sNote, score }) => (
+              <div key={sNote.id} className="group relative glass p-4 rounded-xl border border-surfaceBorder hover:border-blue-500/50 transition-all flex flex-col justify-between items-start gap-3">
+                <div className="w-full">
+                  <div className="flex justify-between items-start w-full">
+                    <h3 className="font-semibold text-textPrimary truncate mb-1">
+                      {sNote.title}
+                    </h3>
+                    <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full whitespace-nowrap">
+                      {Math.round(score * 100)}% Match
+                    </span>
+                  </div>
+                  <p className="text-xs text-textSecondary line-clamp-2">
+                    {sNote.content}
+                  </p>
+                </div>
+                
+                <button 
+                  onClick={() => handleCreateLink(sNote.id)} 
+                  className="text-xs font-semibold bg-primary/10 hover:bg-primary text-primary hover:text-white px-3 py-1.5 rounded-lg w-full flex items-center justify-center gap-1 transition-colors"
+                >
+                  <Plus className="w-3 h-3" /> Connect
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="glass p-6 rounded-3xl">
         <div className="flex justify-between items-center mb-6">
@@ -133,6 +235,27 @@ export default function NoteDetail() {
           </div>
         )}
       </div>
+
+      {relatedTopics.length > 0 && (
+        <div className="glass p-6 rounded-3xl mt-8 border-t border-surfaceBorder bg-gradient-to-br from-purple-500/5 to-transparent">
+          <div className="flex items-center gap-2 mb-4">
+            <Compass className="w-5 h-5 text-purple-400" />
+            <h2 className="text-lg font-bold text-textPrimary">Expand your graph</h2>
+          </div>
+          <p className="text-sm text-textSecondary mb-4">Based on this note, you may also want to learn about:</p>
+          <div className="flex flex-wrap gap-2">
+            {relatedTopics.map(topic => (
+              <button 
+                key={topic}
+                onClick={() => toast.error("Searching topics is functionally out of scope without a linked LLM API!", { icon: '🤖' })}
+                className="px-4 py-2 text-sm font-semibold bg-purple-500/10 text-purple-400 hover:text-white hover:bg-purple-500 border border-purple-500/20 hover:border-purple-500 rounded-xl transition-all shadow-sm"
+              >
+                {topic}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {isLinkModalOpen && (
         <LinkModal

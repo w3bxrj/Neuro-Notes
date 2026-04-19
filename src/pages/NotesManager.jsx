@@ -92,11 +92,11 @@ export default function NotesManager() {
           <select 
             value={selectedTag} 
             onChange={(e) => setSelectedTag(e.target.value)}
-            className="bg-surface border border-surfaceBorder rounded-xl px-4 py-2 text-sm text-textPrimary focus:outline-none focus:border-primary transition-colors"
+            className="bg-surface border border-surfaceBorder rounded-xl px-4 py-2 text-sm text-textPrimary focus:outline-none focus:border-primary transition-colors cursor-pointer"
           >
-            <option value="">All Tags</option>
+            <option value="" className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">All Tags</option>
             {allTags.map(tag => (
-              <option key={tag} value={tag}>{tag}</option>
+              <option key={tag} value={tag} className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">{tag}</option>
             ))}
           </select>
 

@@ -14,7 +14,7 @@ export default function NoteCard({ note, connectedNotes, searchQuery = '', onEdi
   };
 
   return (
-    <div className="glass p-6 rounded-2xl flex flex-col hover:border-primary/50 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group min-h-[200px] border border-surfaceBorder/40">
+    <div className="glass p-6 rounded-2xl flex flex-col hover:border-primary/50 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group h-full border border-surfaceBorder/40">
       <div className="flex justify-between items-start mb-4 gap-2">
         <Link to={`/notes/${note.id}`} className="hover:text-primary transition-colors truncate">
           <h3 className="font-bold text-textPrimary text-xl truncate">{renderHighlightedTitle(note.title)}</h3>
@@ -61,20 +61,27 @@ export default function NoteCard({ note, connectedNotes, searchQuery = '', onEdi
       )}
       
       {connectedNotes && connectedNotes.length > 0 && (
-        <div className="mt-auto border-t border-surfaceBorder pt-4">
+        <div className="mt-auto pt-6 border-t border-surfaceBorder w-full">
           <div className="flex items-center gap-2 mb-3">
             <Network className="w-4 h-4 text-secondary" />
             <span className="text-xs font-semibold text-textSecondary uppercase tracking-wide">Linked Ideas</span>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 items-center w-full">
             {connectedNotes.map(({ note: cNote, linkId }) => (
-              <div key={cNote.id} className="group/pill flex items-center gap-1.5 bg-secondary/10 border border-secondary/20 pl-3 pr-2 py-1.5 rounded-lg text-sm text-secondary transition-colors hover:bg-secondary/20">
-                <Link to={`/notes/${cNote.id}`} className="truncate max-w-[150px] hover:underline">
+              <div 
+                key={cNote.id} 
+                className="group/pill flex items-center gap-1.5 bg-secondary/10 border border-secondary/20 pl-3 pr-2 py-1.5 rounded-lg text-sm text-secondary transition-all hover:bg-secondary/20 min-w-0"
+              >
+                <Link 
+                  to={`/notes/${cNote.id}`} 
+                  className="truncate hover:underline max-w-[150px] sm:max-w-[200px]"
+                  title={cNote.title}
+                >
                   {cNote.title}
                 </Link>
                 <button 
                   onClick={() => onRemoveLink(linkId)} 
-                  className="text-secondary/60 hover:text-red-400 transition-colors"
+                  className="text-secondary/60 hover:text-red-400 transition-colors shrink-0"
                   title="Remove connection"
                 >
                   <X className="w-3.5 h-3.5" />
