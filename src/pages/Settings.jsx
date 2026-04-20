@@ -122,9 +122,9 @@ export default function Settings() {
   );
 
   return (
-    <div className="p-8 max-w-4xl mx-auto w-full">
-      <h1 className="text-4xl font-bold text-textPrimary mb-2">Settings</h1>
-      <p className="text-textSecondary mb-8 text-lg font-medium">Fine-tune your cognitive mapping environment.</p>
+    <div className="p-4 sm:p-8 max-w-4xl mx-auto w-full">
+      <h1 className="text-2xl sm:text-4xl font-bold text-textPrimary mb-1 sm:mb-2">Settings</h1>
+      <p className="text-textSecondary mb-6 sm:mb-8 text-sm sm:text-lg font-medium">Fine-tune your cognitive mapping environment.</p>
 
       <Section title="Graph Controls" icon={Monitor}>
         <ToggleRow 

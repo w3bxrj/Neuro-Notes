@@ -14,22 +14,22 @@ export default function NoteCard({ note, connectedNotes, searchQuery = '', onEdi
   };
 
   return (
-    <div className="glass p-6 rounded-2xl flex flex-col hover:border-primary/50 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group h-full border border-surfaceBorder/40">
+    <div className="glass p-4 sm:p-6 rounded-2xl flex flex-col hover:border-primary/50 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group h-full border border-surfaceBorder/40">
       <div className="flex justify-between items-start mb-4 gap-2">
         <Link to={`/notes/${note.id}`} className="hover:text-primary transition-colors truncate">
           <h3 className="font-bold text-textPrimary text-xl truncate">{renderHighlightedTitle(note.title)}</h3>
         </Link>
-        <div className="flex gap-2 flex-shrink-0">
+        <div className="flex gap-1.5 sm:gap-2 flex-shrink-0">
           <button 
             onClick={() => onOpenLinkModal(note)}
-            className="p-1.5 text-textSecondary hover:text-secondary transition-colors bg-surface rounded-md"
+            className="p-2 text-textSecondary hover:text-secondary transition-colors bg-surface rounded-md min-w-[36px] min-h-[36px] flex items-center justify-center"
             title="Link to..."
           >
             <LinkIcon className="w-4 h-4" />
           </button>
           <button 
             onClick={() => onEdit(note)}
-            className="p-1.5 text-textSecondary hover:text-primary transition-colors bg-surface rounded-md"
+            className="p-2 text-textSecondary hover:text-primary transition-colors bg-surface rounded-md min-w-[36px] min-h-[36px] flex items-center justify-center"
             title="Edit Note"
           >
             <Edit2 className="w-4 h-4" />
@@ -38,7 +38,7 @@ export default function NoteCard({ note, connectedNotes, searchQuery = '', onEdi
             onClick={() => {
                 if (window.confirm('Delete this note and its connections?')) onDelete(note.id);
             }}
-            className="p-1.5 text-textSecondary hover:text-red-400 transition-colors bg-surface rounded-md"
+            className="p-2 text-textSecondary hover:text-red-400 transition-colors bg-surface rounded-md min-w-[36px] min-h-[36px] flex items-center justify-center"
             title="Delete Note"
           >
             <Trash2 className="w-4 h-4" />

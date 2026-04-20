@@ -16,7 +16,8 @@ const nodeWidth = 220; // approximate w of node
 const nodeHeight = 80; // approximate h of node
 
 const getLayoutedElements = (nodes, edges, direction = 'TB') => {
-  dagreGraph.setGraph({ rankdir: direction, nodesep: 100, ranksep: 100 });
+  // Increase spacing so nodes have more touch-friendly gaps
+  dagreGraph.setGraph({ rankdir: direction, nodesep: 140, ranksep: 140 });
 
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
@@ -158,7 +159,6 @@ function GraphContent() {
     const qNotes = query(collection(db, 'notes'), where('userId', '==', currentUser.uid));
     const unsubNotes = onSnapshot(qNotes, (snapshot) => {
       const fetchedNotes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      console.log('GraphView Debug - Notes:', fetchedNotes);
       setNotes(fetchedNotes);
     });
 
@@ -166,7 +166,6 @@ function GraphContent() {
     const qLinks = query(collection(db, 'links'), where('userId', '==', currentUser.uid));
     const unsubLinks = onSnapshot(qLinks, (snapshot) => {
       const fetchedLinks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      console.log('GraphView Debug - Links:', fetchedLinks);
       setLinks(fetchedLinks);
     });
 
@@ -336,8 +335,7 @@ function GraphContent() {
   }, [notes, links, isDarkMode, focusedNodeId, graphMode, pathSourceId, pathTargetId]);
 
   useEffect(() => {
-    console.log('GraphView Debug - layoutedNodes:', layoutedNodes);
-    console.log('GraphView Debug - layoutedEdges:', layoutedEdges);
+    // debug removed
   }, [layoutedNodes, layoutedEdges]);
 
   useEffect(() => {
@@ -397,32 +395,44 @@ function GraphContent() {
       onNodeClick={onNodeClick}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
+      panOnDrag
+      panOnScroll={false}
+      zoomOnScroll
+      zoomOnPinch
+      zoomOnDoubleClick={false}
+      preventScrolling
+      minZoom={0.2}
+      maxZoom={3}
+      fitView
     >
-      <Background color={isDarkMode ? "#555" : "#cbd5e1"} gap={16} />
-      <Controls showInteractive={false} className="bg-surface border-surfaceBorder rounded-lg overflow-hidden" />
+      <Background color={isDarkMode ? '#555' : '#cbd5e1'} gap={16} />
+      {/* Hide controls on small screens — touch gestures handle pan/zoom */}
+      <div className="hidden sm:block">
+        <Controls showInteractive={false} className="bg-surface border-surfaceBorder rounded-lg overflow-hidden" />
+      </div>
       
-      <Panel position="top-right" className="m-4 flex flex-col gap-3">
-        <div className="flex items-center gap-2">
+      <Panel position="top-right" className="m-2 sm:m-4 flex flex-col gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <button 
             onClick={() => { 
               setGraphMode(prev => prev === 'focus' ? 'default' : 'focus'); 
               setFocusedNodeId(null); 
             }}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 shadow-lg transition-all duration-300 border ${
+            className={`px-2 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 sm:gap-2 shadow-lg transition-all duration-300 border ${
               graphMode === 'focus' 
                 ? 'bg-secondary text-white border-secondary shadow-secondary/30 hover:bg-violet-600' 
                 : 'glass text-textPrimary hover:bg-surfaceBorder border-surfaceBorder'
             }`}
-            title="Toggle Focus Mode to isolate specific nodes and their connections"
+            title="Toggle Focus Mode"
           >
-            <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="w-4 h-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
               <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
               <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
               <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
             </svg>
-            Focus: {graphMode === 'focus' ? 'On' : 'Off'}
+            <span className="hidden sm:inline">Focus: {graphMode === 'focus' ? 'On' : 'Off'}</span>
           </button>
 
           <button 
@@ -431,17 +441,17 @@ function GraphContent() {
               setPathSourceId(null);
               setPathTargetId(null);
             }}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 shadow-lg transition-all duration-300 border ${
+            className={`px-2 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 sm:gap-2 shadow-lg transition-all duration-300 border ${
               graphMode === 'pathfinder' 
                 ? 'bg-blue-500 text-white border-blue-500 shadow-blue-500/30 hover:bg-blue-600' 
                 : 'glass text-textPrimary hover:bg-surfaceBorder border-surfaceBorder'
             }`}
-            title="Toggle Pathfinder Mode to discover the shortest route between two concepts"
+            title="Toggle Pathfinder Mode"
           >
-            <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="w-4 h-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 0-2 2v3m0 8v-3a2 2 0 0 1 2-2h3M3 14h3a2 2 0 0 1 2 2v3" />
             </svg>
-            Path: {graphMode === 'pathfinder' ? 'On' : 'Off'}
+            <span className="hidden sm:inline">Path: {graphMode === 'pathfinder' ? 'On' : 'Off'}</span>
           </button>
         </div>
 

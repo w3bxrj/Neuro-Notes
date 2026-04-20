@@ -99,7 +99,7 @@ export default function NoteDetail() {
   const relatedTopics = extractRelatedTopics(note.content, note.tags);
 
   return (
-    <div className="p-8 h-full flex flex-col relative max-w-4xl mx-auto w-full">
+    <div className="p-4 sm:p-8 h-full flex flex-col relative max-w-4xl mx-auto w-full">
       <button 
         onClick={() => navigate('/notes')}
         className="flex items-center gap-2 text-textSecondary hover:text-primary transition-colors mb-6 w-fit"
@@ -108,8 +108,8 @@ export default function NoteDetail() {
         Back to Notes
       </button>
 
-      <div className="glass p-8 rounded-3xl flex flex-col flex-1 mb-8">
-        <h1 className="text-4xl font-bold text-textPrimary mb-4">{note.title}</h1>
+      <div className="glass p-4 sm:p-8 rounded-3xl flex flex-col flex-1 mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-4xl font-bold text-textPrimary mb-3 sm:mb-4 break-words">{note.title}</h1>
         {note.tags && note.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-6">
             {note.tags.map(tag => (
