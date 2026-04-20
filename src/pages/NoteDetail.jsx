@@ -6,6 +6,8 @@ import toast from 'react-hot-toast';
 import LinkModal from '../components/notes/LinkModal';
 import { useSettings } from '../context/SettingsContext';
 import { calculateSimilarity, generateSummary, extractRelatedTopics } from '../utils/similarity';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function NoteDetail() {
   const { id } = useParams();
@@ -147,8 +149,8 @@ export default function NoteDetail() {
           </div>
         )}
 
-        <div className="text-textSecondary whitespace-pre-wrap leading-relaxed text-lg flex-1">
-          {note.content}
+        <div className="markdown-body flex-1">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{note.content}</ReactMarkdown>
         </div>
       </div>
 
@@ -208,13 +210,17 @@ export default function NoteDetail() {
             No notes connected yet. Build your knowledge graph!
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex flex-wrap gap-3">
             {connectedNotes.map(({ note: cNote, linkId }) => (
-              <div key={cNote.id} className="group relative glass p-4 rounded-xl border border-secondary/20 hover:border-secondary/40 transition-colors flex justify-between items-center">
-                <Link to={`/notes/${cNote.id}`} className="flex-1 truncate pr-4">
-                  <h3 className="font-semibold text-textPrimary group-hover:text-secondary transition-colors truncate">
-                    {cNote.title}
-                  </h3>
+              <div 
+                key={cNote.id} 
+                className="group inline-flex items-center gap-2 px-3 py-1.5 bg-secondary/10 border border-secondary/20 rounded-full text-sm text-secondary transition-all hover:bg-secondary/20 min-w-0 animate-in fade-in zoom-in duration-200"
+              >
+                <Link 
+                  to={`/notes/${cNote.id}`} 
+                  className="truncate hover:underline font-semibold max-w-[150px] sm:max-w-xs"
+                >
+                  {cNote.title}
                 </Link>
                 <button 
                   onClick={async () => {
@@ -225,10 +231,10 @@ export default function NoteDetail() {
                       toast.error('Failed to remove: ' + e.message);
                     }
                   }} 
-                  className="text-textSecondary hover:text-red-400 p-2 rounded-lg hover:bg-surface transition-colors"
+                  className="text-textSecondary hover:text-red-400 opacity-60 hover:opacity-100 transition-all p-0.5"
                   title="Remove connection"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-3.5 h-3.5" />
                 </button>
               </div>
             ))}
@@ -245,13 +251,12 @@ export default function NoteDetail() {
           <p className="text-sm text-textSecondary mb-4">Based on this note, you may also want to learn about:</p>
           <div className="flex flex-wrap gap-2">
             {relatedTopics.map(topic => (
-              <button 
+              <div 
                 key={topic}
-                onClick={() => toast.error("Searching topics is functionally out of scope without a linked LLM API!", { icon: '🤖' })}
-                className="px-4 py-2 text-sm font-semibold bg-purple-500/10 text-purple-400 hover:text-white hover:bg-purple-500 border border-purple-500/20 hover:border-purple-500 rounded-xl transition-all shadow-sm"
+                className="px-4 py-2 text-sm font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-xl transition-all shadow-sm cursor-default"
               >
                 {topic}
-              </button>
+              </div>
             ))}
           </div>
         </div>
