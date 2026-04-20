@@ -23,7 +23,7 @@ export default function Navbar({ onMenuClick }) {
   return (
     <nav className="glass sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
       <div className="flex items-center gap-3">
-        {/* Hamburger — mobile only */}
+
         <button
           onClick={onMenuClick}
           className="p-2 rounded-lg hover:bg-surfaceBorder transition-colors md:hidden"

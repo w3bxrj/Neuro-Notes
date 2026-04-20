@@ -39,7 +39,7 @@ export default function NoteDetail() {
     );
   }
 
-  // Calculate connected notes bidirectionally
+
   const connectedNotes = links
     .filter(l => l.sourceId === id || l.targetId === id)
     .map(l => ({

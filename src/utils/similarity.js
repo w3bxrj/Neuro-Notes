@@ -22,7 +22,7 @@ function calculateJaccard(setA, setB) {
 export function calculateSimilarity(noteA, noteB) {
   let score = 0;
 
-  // 1. Tag overlap (+0.4 per shared tag)
+
   if (noteA.tags && noteB.tags) {
     const tagsA = new Set(noteA.tags.map(t => t.toLowerCase()));
     const tagsB = new Set(noteB.tags.map(t => t.toLowerCase()));
@@ -30,13 +30,13 @@ export function calculateSimilarity(noteA, noteB) {
     score += sharedTags * 0.4;
   }
 
-  // 2. Title overlap (30% max weight)
+
   const titleTokensA = new Set(tokenize(noteA.title));
   const titleTokensB = new Set(tokenize(noteB.title));
   const titleSimilarity = calculateJaccard(titleTokensA, titleTokensB);
   score += titleSimilarity * 0.3;
 
-  // 3. Content overlap (30% max weight)
+
   const contentTokensA = new Set(tokenize(noteA.content));
   const contentTokensB = new Set(tokenize(noteB.content));
   const contentSimilarity = calculateJaccard(contentTokensA, contentTokensB);

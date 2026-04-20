@@ -12,11 +12,11 @@ import { useSettings } from '../context/SettingsContext';
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-const nodeWidth = 220; // approximate w of node
-const nodeHeight = 80; // approximate h of node
+const nodeWidth = 220; 
+const nodeHeight = 80; 
 
 const getLayoutedElements = (nodes, edges, direction = 'TB') => {
-  // Increase spacing so nodes have more touch-friendly gaps
+
   dagreGraph.setGraph({ rankdir: direction, nodesep: 140, ranksep: 140 });
 
   nodes.forEach((node) => {
@@ -155,14 +155,14 @@ function GraphContent() {
   useEffect(() => {
     if (!currentUser) return;
 
-    // 1. Fetch notes from Firestore
+
     const qNotes = query(collection(db, 'notes'), where('userId', '==', currentUser.uid));
     const unsubNotes = onSnapshot(qNotes, (snapshot) => {
       const fetchedNotes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setNotes(fetchedNotes);
     });
 
-    // 1. Fetch links from Firestore
+
     const qLinks = query(collection(db, 'links'), where('userId', '==', currentUser.uid));
     const unsubLinks = onSnapshot(qLinks, (snapshot) => {
       const fetchedLinks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -184,7 +184,7 @@ function GraphContent() {
     return `hsl(${Math.abs(hash) % 360}, 70%, 60%)`;
   };
 
-  // 2. Convert Data to React Flow structures
+
   const { nodes: layoutedNodes, edges: layoutedEdges } = useMemo(() => {
     const isDark = document.documentElement.classList.contains('dark');
     const connectedToFocus = new Set();
@@ -335,7 +335,6 @@ function GraphContent() {
   }, [notes, links, isDarkMode, focusedNodeId, graphMode, pathSourceId, pathTargetId]);
 
   useEffect(() => {
-    // debug removed
   }, [layoutedNodes, layoutedEdges]);
 
   useEffect(() => {
@@ -406,7 +405,7 @@ function GraphContent() {
       fitView
     >
       <Background color={isDarkMode ? '#555' : '#cbd5e1'} gap={16} />
-      {/* Hide controls on small screens — touch gestures handle pan/zoom */}
+
       <div className="hidden sm:block">
         <Controls showInteractive={false} className="bg-surface border-surfaceBorder rounded-lg overflow-hidden" />
       </div>

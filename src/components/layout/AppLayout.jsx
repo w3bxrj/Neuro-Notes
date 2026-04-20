@@ -8,7 +8,7 @@ export default function AppLayout() {
 
   return (
     <div className="h-screen bg-background flex overflow-hidden">
-      {/* Mobile drawer overlay */}
+
       {drawerOpen && (
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
@@ -16,7 +16,7 @@ export default function AppLayout() {
         />
       )}
 
-      {/* Sidebar — permanent on md+, drawer on mobile */}
+
       <div
         className={`
           fixed inset-y-0 left-0 z-50 transition-transform duration-300 ease-in-out
@@ -27,7 +27,7 @@ export default function AppLayout() {
         <Sidebar onClose={() => setDrawerOpen(false)} />
       </div>
 
-      {/* Main content */}
+
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden p-3 sm:p-4 gap-4">
         <Navbar onMenuClick={() => setDrawerOpen(true)} />
         <main className="flex-1 relative glass overflow-hidden rounded-xl">

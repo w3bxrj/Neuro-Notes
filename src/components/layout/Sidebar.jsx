@@ -12,7 +12,7 @@ export default function Sidebar({ onClose }) {
 
   return (
     <aside className="w-64 h-full bg-surface border-r border-surfaceBorder flex flex-col md:rounded-none md:h-[calc(100vh)] overflow-hidden">
-      {/* Header — only visible on mobile, shows branding + close */}
+
       <div className="flex items-center justify-between px-5 py-4 border-b border-surfaceBorder md:hidden">
         <div className="flex items-center gap-2">
           <div className="bg-primary/20 p-1.5 rounded-lg">
@@ -28,7 +28,7 @@ export default function Sidebar({ onClose }) {
         </button>
       </div>
 
-      {/* Desktop header */}
+
       <div className="hidden md:block p-4 border-b border-surfaceBorder">
         <h2 className="text-sm font-semibold text-textSecondary uppercase tracking-wider">Menu</h2>
       </div>

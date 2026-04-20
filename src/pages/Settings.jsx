@@ -28,7 +28,7 @@ export default function Settings() {
   } = useSettings();
   const { currentUser } = useAuth();
   
-  const [showConfirm, setShowConfirm] = useState(null); // 'summaries', 'notes', 'links'
+  const [showConfirm, setShowConfirm] = useState(null); 
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleToggle = (key, currentVal) => {
@@ -203,7 +203,7 @@ export default function Settings() {
         />
       </Section>
 
-      {/* Confirmation Modal */}
+
       {showConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => !isDeleting && setShowConfirm(null)}></div>

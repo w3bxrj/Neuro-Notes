@@ -9,7 +9,7 @@ export default function NoteModal({ isOpen, onClose, onSave, editingNote, submit
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tagsInput, setTagsInput] = useState('');
-  const [editorMode, setEditorMode] = useState('write'); // 'write' | 'preview'
+  const [editorMode, setEditorMode] = useState('write'); 
   const [fileError, setFileError] = useState('');
   const [isConverting, setIsConverting] = useState(false);
   const fileInputRef = useRef(null);
@@ -86,7 +86,7 @@ export default function NoteModal({ isOpen, onClose, onSave, editingNote, submit
           {editingNote ? 'Edit Note' : 'Create New Note'}
         </h2>
         <form onSubmit={handleSubmit}>
-          {/* Title */}
+
           <div className="mb-4">
             <label className="block text-sm font-medium text-textSecondary mb-2">Title</label>
             <input
@@ -99,7 +99,7 @@ export default function NoteModal({ isOpen, onClose, onSave, editingNote, submit
             />
           </div>
 
-          {/* Tags */}
+
           <div className="mb-4">
             <label className="block text-sm font-medium text-textSecondary mb-2">Tags (comma-separated)</label>
             <input
@@ -111,12 +111,12 @@ export default function NoteModal({ isOpen, onClose, onSave, editingNote, submit
             />
           </div>
 
-          {/* Markdown Editor */}
+
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-medium text-textSecondary">Content</label>
               <div className="flex items-center gap-2">
-                {/* Import .md file */}
+
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -124,7 +124,7 @@ export default function NoteModal({ isOpen, onClose, onSave, editingNote, submit
                   className="hidden"
                   onChange={handleFileUpload}
                 />
-                {/* AI document conversion */}
+
                 <input
                   ref={docInputRef}
                   type="file"
@@ -152,7 +152,7 @@ export default function NoteModal({ isOpen, onClose, onSave, editingNote, submit
                     ? <><Loader className="w-3 h-3 animate-spin" /> Converting...</>
                     : <><Sparkles className="w-3 h-3" /> AI Convert</>}
                 </button>
-                {/* Write / Preview toggle */}
+
                 <div className="flex items-center gap-1 bg-surface border border-surfaceBorder rounded-lg p-1">
                 <button
                   type="button"

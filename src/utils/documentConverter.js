@@ -3,7 +3,7 @@
  * Extracts text from PDF/DOCX files and converts to clean Markdown via Gemini AI.
  */
 
-// ── PDF extraction ──────────────────────────────────────────────────────────
+
 async function extractTextFromPDF(arrayBuffer) {
   // Dynamic import keeps the large pdfjs bundle out of the initial chunk
   const pdfjsLib = await import('pdfjs-dist');
@@ -25,14 +25,14 @@ async function extractTextFromPDF(arrayBuffer) {
   return pageTexts.join('\n\n');
 }
 
-// ── DOCX extraction ─────────────────────────────────────────────────────────
+
 async function extractTextFromDOCX(arrayBuffer) {
   const mammoth = await import('mammoth');
   const result = await mammoth.extractRawText({ arrayBuffer });
   return result.value;
 }
 
-// ── Gemini AI conversion ────────────────────────────────────────────────────
+
 async function convertToMarkdownWithAI(rawText) {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   if (!apiKey) {
@@ -74,7 +74,7 @@ ${rawText}`;
   return markdown.trim();
 }
 
-// ── Public API ───────────────────────────────────────────────────────────────
+
 /**
  * Given a File object (PDF or DOCX), extracts its text and converts it
  * to clean Markdown using the Gemini API.
