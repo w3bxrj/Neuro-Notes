@@ -1,20 +1,22 @@
 import React, { useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
-
-mermaid.initialize({
-  startOnLoad: false,
-  theme: 'dark',
-  securityLevel: 'loose',
-  flowchart: {
-    useMaxWidth: false,
-    htmlLabels: true,
-  }
-});
+import { useTheme } from '../../context/ThemeContext';
 
 export default function MermaidChart({ chart }) {
   const chartRef = useRef(null);
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: isDarkMode ? 'dark' : 'default',
+      securityLevel: 'loose',
+      flowchart: {
+        useMaxWidth: false,
+        htmlLabels: false, // Set to false to avoid Tailwind CSS resets breaking the node styling
+      }
+    });
+
     if (chartRef.current && chart) {
       const renderChart = async () => {
         try {
@@ -33,7 +35,7 @@ export default function MermaidChart({ chart }) {
       };
       renderChart();
     }
-  }, [chart]);
+  }, [chart, isDarkMode]);
 
   return (
     <div className="mermaid-chart w-full overflow-x-auto my-6 flex justify-center items-center py-4 rounded-xl bg-surface/30 border border-surfaceBorder">
