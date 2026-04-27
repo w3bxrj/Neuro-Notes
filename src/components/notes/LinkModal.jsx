@@ -6,7 +6,7 @@ export default function LinkModal({ linkModalSource, onClose, onLinkCreated, ava
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
-      <div className="glass p-8 rounded-2xl w-full max-w-md border border-surfaceBorder animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-background shadow-2xl p-8 rounded-2xl w-full max-w-md border border-surfaceBorder animate-in fade-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-textPrimary flex items-center gap-2">
             <LinkIcon className="w-5 h-5 text-secondary" />

@@ -207,7 +207,7 @@ export default function Settings() {
       {showConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => !isDeleting && setShowConfirm(null)}></div>
-          <div className="glass relative z-10 w-full max-w-md p-8 rounded-3xl border border-red-500/30 animate-in fade-in zoom-in duration-200">
+          <div className="bg-background shadow-2xl relative z-10 w-full max-w-md p-8 rounded-3xl border border-red-500/30 animate-in fade-in zoom-in duration-200">
             <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mb-6 mx-auto">
               <AlertTriangle className="w-8 h-8" />
             </div>

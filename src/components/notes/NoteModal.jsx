@@ -82,7 +82,7 @@ export default function NoteModal({ isOpen, onClose, onSave, editingNote, submit
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
-      <div className="glass p-8 rounded-2xl w-full max-w-3xl border border-surfaceBorder animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-background shadow-2xl p-8 rounded-2xl w-full max-w-3xl border border-surfaceBorder animate-in fade-in zoom-in-95 duration-200">
         <h2 className="text-2xl font-bold text-textPrimary mb-6">
           {editingNote ? 'Edit Note' : 'Create New Note'}
         </h2>
