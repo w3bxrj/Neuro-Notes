@@ -3,10 +3,11 @@ import mermaid from 'mermaid';
 
 mermaid.initialize({
   startOnLoad: false,
-  theme: 'base',
+  theme: 'dark',
   securityLevel: 'loose',
-  themeVariables: {
-    fontFamily: 'inherit',
+  flowchart: {
+    useMaxWidth: false,
+    htmlLabels: true,
   }
 });
 
@@ -34,5 +35,9 @@ export default function MermaidChart({ chart }) {
     }
   }, [chart]);
 
-  return <div ref={chartRef} className="mermaid-chart flex justify-center my-6 overflow-x-auto" />;
+  return (
+    <div className="mermaid-chart w-full overflow-x-auto my-6 flex justify-center items-center py-4 rounded-xl bg-surface/30 border border-surfaceBorder">
+      <div ref={chartRef} className="min-w-fit" />
+    </div>
+  );
 }
