@@ -4,6 +4,7 @@ import { Loader, Eye, Edit3, Upload, Sparkles } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { convertDocumentToMarkdown } from '../../utils/documentConverter';
+import MermaidChart from './MermaidChart';
 
 export default function NoteModal({ isOpen, onClose, onSave, editingNote, submitting }) {
   const [title, setTitle] = useState('');
@@ -191,7 +192,21 @@ export default function NoteModal({ isOpen, onClose, onSave, editingNote, submit
               <div className="w-full bg-background border border-surfaceBorder rounded-xl px-4 py-3 h-64 overflow-y-auto">
                 {content.trim() ? (
                   <div className="markdown-body">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        code(props) {
+                          const {children, className, node, ...rest} = props;
+                          const match = /language-(\w+)/.exec(className || '');
+                          if (match && match[1] === 'mermaid') {
+                            return <MermaidChart chart={String(children).replace(/\n$/, '')} />;
+                          }
+                          return <code {...rest} className={className}>{children}</code>;
+                        }
+                      }}
+                    >
+                      {content}
+                    </ReactMarkdown>
                   </div>
                 ) : (
                   <p className="text-textSecondary text-sm italic opacity-60">Nothing to preview yet. Switch to Write and add some content.</p>

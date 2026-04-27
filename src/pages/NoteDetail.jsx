@@ -8,6 +8,7 @@ import { useSettings } from '../context/SettingsContext';
 import { calculateSimilarity, generateSummary, extractRelatedTopics } from '../utils/similarity';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import MermaidChart from '../components/notes/MermaidChart';
 
 export default function NoteDetail() {
   const { id } = useParams();
@@ -150,7 +151,21 @@ export default function NoteDetail() {
         )}
 
         <div className="markdown-body flex-1">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{note.content}</ReactMarkdown>
+          <ReactMarkdown 
+            remarkPlugins={[remarkGfm]}
+            components={{
+              code(props) {
+                const {children, className, node, ...rest} = props;
+                const match = /language-(\w+)/.exec(className || '');
+                if (match && match[1] === 'mermaid') {
+                  return <MermaidChart chart={String(children).replace(/\n$/, '')} />;
+                }
+                return <code {...rest} className={className}>{children}</code>;
+              }
+            }}
+          >
+            {note.content}
+          </ReactMarkdown>
         </div>
       </div>
 
