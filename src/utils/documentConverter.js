@@ -1,7 +1,6 @@
-/**
- * documentConverter.js
- * Extracts text from PDF/DOCX files and converts to clean Markdown via Gemini AI.
- */
+//   Extracts text from PDF/DOCX files and converts to clean Markdown via Groq AI.
+
+import Groq from 'groq-sdk';
 
 
 async function extractTextFromPDF(arrayBuffer) {
@@ -34,10 +33,15 @@ async function extractTextFromDOCX(arrayBuffer) {
 
 
 async function convertToMarkdownWithAI(rawText) {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error('VITE_GEMINI_API_KEY is not set in the .env file.');
+  const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+  if (!apiKey || apiKey === 'gsk_your_groq_api_key_here') {
+    throw new Error('VITE_GROQ_API_KEY is not set in the .env file.');
   }
+
+  const groq = new Groq({
+    apiKey: apiKey,
+    dangerouslyAllowBrowser: true
+  });
 
   const prompt = `Convert the following extracted document text into clean, well-structured Markdown.
 
@@ -52,32 +56,34 @@ Instructions:
 Document text:
 ${rawText}`;
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-      }),
-    }
-  );
+  try {
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: "You are a specialized document converter that transforms raw text into clean, structured Markdown."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      model: "llama-3.3-70b-versatile",
+    });
 
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `API error: ${response.status}`);
+    const markdown = chatCompletion.choices[0]?.message?.content;
+    if (!markdown) throw new Error('No content returned from Groq.');
+    return markdown.trim();
+  } catch (error) {
+    console.error('AI conversion failed:', error);
+    throw error;
   }
-
-  const data = await response.json();
-  const markdown = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!markdown) throw new Error('No content returned from AI.');
-  return markdown.trim();
 }
 
 
 /**
  * Given a File object (PDF or DOCX), extracts its text and converts it
- * to clean Markdown using the Gemini API.
+ * to clean Markdown using the Groq AI.
  * @param {File} file
  * @returns {Promise<string>} Markdown string
  */

@@ -158,7 +158,7 @@ export default function Settings() {
       <Section title="AI Capabilities" icon={Cpu}>
         <ToggleRow 
           label="Enable AI Summarization"
-          description="Allow Gemini flash to extract core concepts from your notes."
+          description="Allow Groq Llama 3 to extract core concepts from your notes."
           value={aiEnabled}
           iconOn={Check}
           iconOff={X}

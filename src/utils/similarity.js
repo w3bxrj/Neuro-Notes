@@ -45,39 +45,40 @@ export function calculateSimilarity(noteA, noteB) {
   return Math.min(1.0, score);
 }
 
+import Groq from "groq-sdk";
+
 export async function generateSummary(text) {
   if (!text || text.length < 50) return "Content is too short to generate a meaningful summary.";
 
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error("VITE_GEMINI_API_KEY is not set. Please provide a valid Gemini API key in the .env file.");
+  const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+  if (!apiKey || apiKey === 'gsk_your_groq_api_key_here') {
+    throw new Error("VITE_GROQ_API_KEY is not set. Please provide a valid Groq API key in the .env file.");
   }
 
-  const prompt = "Summarize this note in 2-3 concise sentences:\n\n" + text;
+  const groq = new Groq({
+    apiKey: apiKey,
+    dangerouslyAllowBrowser: true // Since this is a client-side app
+  });
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{ text: prompt }]
-        }]
-      })
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: "You are a helpful assistant that summarizes notes into 2-3 concise sentences."
+        },
+        {
+          role: "user",
+          content: "Summarize this note in 2-3 concise sentences:\n\n" + text
+        }
+      ],
+      model: "llama-3.3-70b-versatile",
     });
 
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      throw new Error(err?.error?.message || `API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const summary = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    const summary = chatCompletion.choices[0]?.message?.content;
     
     if (!summary) {
-      throw new Error("Invalid response format from Gemini API.");
+      throw new Error("Invalid response format from Groq API.");
     }
 
     return summary.trim();
