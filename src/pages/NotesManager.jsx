@@ -14,6 +14,7 @@ export default function NotesManager() {
   const [linkModalSource, setLinkModalSource] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
+  const [sortBy, setSortBy] = useState('latest');
 
   const openCreateModal = () => {
     setEditingNote(null);
@@ -64,11 +65,25 @@ export default function NotesManager() {
 
   const allTags = Array.from(new Set(notes.flatMap(n => n.tags || []))).sort();
 
-  const filteredNotes = notes.filter(n => {
-    const matchesSearch = n.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTag = !selectedTag || (n.tags && n.tags.includes(selectedTag));
-    return matchesSearch && matchesTag;
-  });
+  const filteredNotes = notes
+    .filter(n => {
+      const matchesSearch = n.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesTag = !selectedTag || (n.tags && n.tags.includes(selectedTag));
+      return matchesSearch && matchesTag;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'alphabetical') {
+        return a.title.localeCompare(b.title);
+      } else if (sortBy === 'reverse-alphabetical') {
+        return b.title.localeCompare(a.title);
+      } else if (sortBy === 'latest') {
+        // Handle Firebase Timestamp or fallback to regular Date
+        const dateA = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : (a.createdAt || 0);
+        const dateB = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : (b.createdAt || 0);
+        return dateB - dateA;
+      }
+      return 0;
+    });
 
   return (
     <div className="p-4 sm:p-8 h-full flex flex-col relative max-w-7xl mx-auto">
@@ -98,6 +113,16 @@ export default function NotesManager() {
             {allTags.map(tag => (
               <option key={tag} value={tag} className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">{tag}</option>
             ))}
+          </select>
+
+          <select 
+            value={sortBy} 
+            onChange={(e) => setSortBy(e.target.value)}
+            className="bg-surface border border-surfaceBorder rounded-xl px-4 py-2 text-sm text-textPrimary focus:outline-none focus:border-primary transition-colors cursor-pointer"
+          >
+            <option value="latest" className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">Latest</option>
+            <option value="alphabetical" className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">A-Z (Alphabetic)</option>
+            <option value="reverse-alphabetical" className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">Z-A (Reverse Alphabetic)</option>
           </select>
 
           <button 
