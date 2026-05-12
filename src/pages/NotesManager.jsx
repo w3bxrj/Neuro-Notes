@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNotes } from '../context/NotesContext';
-import { Plus, Loader, Search } from 'lucide-react';
+import { Plus, Loader, Search, LayoutGrid, Network, Filter, SortAsc } from 'lucide-react';
 import toast from 'react-hot-toast';
 import NoteCard from '../components/notes/NoteCard';
 import NoteModal from '../components/notes/NoteModal';
 import LinkModal from '../components/notes/LinkModal';
+import GraphComponent from '../components/graph/GraphComponent';
+import CustomDropdown from '../components/common/CustomDropdown';
 
 export default function NotesManager() {
   const { notes, links, addNote, updateNote, deleteNote, addLink, deleteLink, loading } = useNotes();
@@ -15,6 +17,7 @@ export default function NotesManager() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
   const [sortBy, setSortBy] = useState('latest');
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'graph'
 
   const openCreateModal = () => {
     setEditingNote(null);
@@ -56,14 +59,25 @@ export default function NotesManager() {
   const getAvailableNotesForLink = () => {
     if (!linkModalSource) return [];
     return notes
-      .filter(n => n.id !== linkModalSource.id) 
-      .filter(n => !links.some(l => 
+      .filter(n => n.id !== linkModalSource.id)
+      .filter(n => !links.some(l =>
         (l.sourceId === linkModalSource.id && l.targetId === n.id) ||
         (l.sourceId === n.id && l.targetId === linkModalSource.id)
       ));
   };
 
   const allTags = Array.from(new Set(notes.flatMap(n => n.tags || []))).sort();
+
+  const tagOptions = [
+    { label: 'All Tags', value: '' },
+    ...allTags.map(tag => ({ label: tag, value: tag }))
+  ];
+
+  const sortOptions = [
+    { label: 'Latest', value: 'latest' },
+    { label: 'A-Z', value: 'alphabetical' },
+    { label: 'Z-A', value: 'reverse-alphabetical' }
+  ];
 
   const filteredNotes = notes
     .filter(n => {
@@ -92,42 +106,54 @@ export default function NotesManager() {
           <h1 className="text-xl sm:text-3xl font-bold text-textPrimary mb-1 sm:mb-2">My Notes</h1>
           <p className="text-sm text-textSecondary">Manage your thoughts and connections.</p>
         </div>
-        <div className="flex items-center gap-4 w-full md:w-auto mt-4 md:mt-0">
-          <div className="relative flex-1 md:w-64">
+        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
+          <div className="flex bg-surface border border-surfaceBorder rounded-xl p-1 shrink-0 shadow-sm">
+            <button 
+              onClick={() => setViewMode('grid')}
+              className={`p-2 rounded-lg transition-all duration-200 ${viewMode === 'grid' ? 'bg-primary text-white shadow-md' : 'text-textSecondary hover:text-textPrimary'}`}
+              title="Grid View"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={() => setViewMode('graph')}
+              className={`p-2 rounded-lg transition-all duration-200 ${viewMode === 'graph' ? 'bg-primary text-white shadow-md' : 'text-textSecondary hover:text-textPrimary'}`}
+              title="Graph View"
+            >
+              <Network className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="relative flex-1 min-w-[200px] md:w-64">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary" />
-            <input 
-              type="text" 
-              placeholder="Search notes..." 
+            <input
+              type="text"
+              placeholder="Search notes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-surface border border-surfaceBorder rounded-xl pl-9 pr-4 py-2 text-sm text-textPrimary focus:outline-none focus:border-primary transition-colors"
+              className="w-full bg-surface border border-surfaceBorder rounded-xl pl-9 pr-4 py-2 text-sm text-textPrimary focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
             />
           </div>
-          
-          <select 
-            value={selectedTag} 
-            onChange={(e) => setSelectedTag(e.target.value)}
-            className="bg-surface border border-surfaceBorder rounded-xl px-4 py-2 text-sm text-textPrimary focus:outline-none focus:border-primary transition-colors cursor-pointer"
-          >
-            <option value="" className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">All Tags</option>
-            {allTags.map(tag => (
-              <option key={tag} value={tag} className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">{tag}</option>
-            ))}
-          </select>
 
-          <select 
-            value={sortBy} 
-            onChange={(e) => setSortBy(e.target.value)}
-            className="bg-surface border border-surfaceBorder rounded-xl px-4 py-2 text-sm text-textPrimary focus:outline-none focus:border-primary transition-colors cursor-pointer"
-          >
-            <option value="latest" className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">Latest</option>
-            <option value="alphabetical" className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">A-Z</option>
-            <option value="reverse-alphabetical" className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">Z-A</option>
-          </select>
+          <CustomDropdown 
+            options={tagOptions}
+            value={selectedTag}
+            onChange={setSelectedTag}
+            placeholder="Filter by Tag"
+            icon={Filter}
+          />
 
-          <button 
+          <CustomDropdown 
+            options={sortOptions}
+            value={sortBy}
+            onChange={setSortBy}
+            placeholder="Sort by"
+            icon={SortAsc}
+          />
+
+          <button
             onClick={openCreateModal}
-            className="bg-primary hover:bg-blue-500 text-white px-3 sm:px-4 py-2 rounded-xl flex items-center gap-2 transition-colors shadow-lg shadow-primary/20 shrink-0 min-h-[44px]"
+            className="bg-primary hover:bg-blue-500 text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-primary/20 shrink-0 min-h-[40px] font-medium"
           >
             <Plus className="w-5 h-5" />
             <span className="hidden md:inline">New Note</span>
@@ -144,6 +170,15 @@ export default function NotesManager() {
           <p className="mb-4 text-center">No notes found. It's quiet in here...</p>
           <button onClick={openCreateModal} className="text-primary hover:underline font-medium">Create your first note</button>
         </div>
+      ) : viewMode === 'graph' ? (
+        <div className="flex-1 min-h-0 bg-surface/10 rounded-3xl overflow-hidden border border-surfaceBorder">
+          <GraphComponent 
+            notes={notes} 
+            links={links} 
+            searchQuery={searchQuery} 
+            selectedTag={selectedTag} 
+          />
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto pb-8">
           {filteredNotes.length === 0 && searchQuery && (
@@ -155,8 +190,8 @@ export default function NotesManager() {
             const connectedNotes = links
               .filter(l => l.sourceId === note.id || l.targetId === note.id)
               .map(l => ({
-                note: notes.find(n => n.id === (l.sourceId === note.id ? l.targetId : l.sourceId)), 
-                linkId: l.id 
+                note: notes.find(n => n.id === (l.sourceId === note.id ? l.targetId : l.sourceId)),
+                linkId: l.id
               }))
               .filter(item => item.note);
 
