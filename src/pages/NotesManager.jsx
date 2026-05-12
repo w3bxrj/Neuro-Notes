@@ -121,8 +121,8 @@ export default function NotesManager() {
             className="bg-surface border border-surfaceBorder rounded-xl px-4 py-2 text-sm text-textPrimary focus:outline-none focus:border-primary transition-colors cursor-pointer"
           >
             <option value="latest" className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">Latest</option>
-            <option value="alphabetical" className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">A-Z (Alphabetic)</option>
-            <option value="reverse-alphabetical" className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">Z-A (Reverse Alphabetic)</option>
+            <option value="alphabetical" className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">A-Z</option>
+            <option value="reverse-alphabetical" className="bg-white text-slate-900 dark:bg-[#0B0F19] dark:text-white">Z-A</option>
           </select>
 
           <button 
